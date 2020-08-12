@@ -8,16 +8,22 @@ using namespace std;
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/features2d/features2d.hpp>
+
 #ifdef USE_CONTRIB
-#include <opencv2/xfeatures2d/nonfree.hpp>
-#include <opencv2/xfeatures2d.hpp>
+    #include <opencv2/xfeatures2d/nonfree.hpp>
+    #include <opencv2/xfeatures2d.hpp>
 #endif
 
+#include "dirreader.h"
+
+#include <filesystem>
+
+using namespace std::__fs::filesystem;
 
 #include <chrono>
 class CmdLineParser { int argc; char **argv; public: CmdLineParser(int _argc, char **_argv) :argc(_argc), argv(_argv) {}  bool operator[] (string param) { int idx = -1;  for (int i = 0; i<argc && idx == -1; i++) if (string(argv[i]) == param) idx = i;    return (idx != -1); } string operator()(string param, string defvalue = "-1") { int idx = -1;    for (int i = 0; i<argc && idx == -1; i++) if (string(argv[i]) == param) idx = i; if (idx == -1) return defvalue;   else  return (argv[idx + 1]); } };
 
-vector< cv::Mat  >  loadFeatures(std::vector<string> path_to_images, string descriptor = "")  {
+vector< cv::Mat > loadFeatures(std::vector<string> path_to_images, string descriptor = "")  {
     //select detector
     cv::Ptr<cv::Feature2D> fdetector;
     if (descriptor == "orb")        fdetector = cv::ORB::create(2000);
@@ -47,28 +53,50 @@ vector< cv::Mat  >  loadFeatures(std::vector<string> path_to_images, string desc
         features.push_back(descriptors);
         cout << "done detecting features" << endl;
     }
+
     return features;
 }
 
 int main(int argc, char **argv) {
     CmdLineParser cml(argc, argv);
     try {
-        if (argc<3 || cml["-h"]) throw std::runtime_error("Usage: fbow   image [descriptor]");
+        if (argc<4 || cml["-h"]) throw std::runtime_error("Usage: FBoW_File Output_File(Ne sert à rien pour le moment) Image1 Image2 ... [descriptor]\n
+                                                           Usage: FBoW_File Output_File(Ne sert à rien pour le moment) Images_Directory [descriptor]\n          ");
+        /** cd ..; cmake ..; make;  cd utils; ./image_matching ../../vocabularies/orb_mur.fbow output_image_matching 
+         * images/poly01.jpg images/poly02.jpg images/poly03.jpg images/poly04.jpg images/poly05.jpg images/poly06.jpg 
+         * images/poly07.jpg images/poly08.jpg images/poly09.jpg images/poly10.jpg images/poly11.jpg images/poly12.jpg 
+         * images/poly13.jpg images/poly14.jpg images/poly15.jpg images/poly16.jpg images/poly17.jpg 
+         * **/
+        /** cd ..; cmake ..; make;  cd utils; ./image_matching ../../vocabularies/orb_mur.fbow output_image_matching imagesFolder **/
+        
         fbow::Vocabulary voc;
         voc.readFromFile(argv[1]);
 
         string desc_name = voc.getDescName();
         cout << "voc desc name=" << desc_name << endl;
-        vector<vector<cv::Mat> > features(argc - 3);
+        vector<vector<cv::Mat> > features;
         vector<map<double, int> > scores;
-        vector<string > filenames(argc - 3);
+        // vector<string > filenames(argc - 3);
         string outDir = argv[2];
-        for (int i = 3; i < argc; ++i)
-        {
-            filenames[i - 3] = { argv[i] };
+
+        vector<string> filenames;
+
+        if (argc == 4){ /** read Image From Folder **/
+            for (const auto & entry : directory_iterator(argv[3])){
+                path tmp = entry.path();
+                if (tmp.extension() == ".jpg" || tmp.extension() == ".png")
+                    filenames.push_back(entry.path());
+            }
         }
+        else{
+            for (int i = 3; i < argc; ++i)
+                filenames.push_back({ argv[i] });
+        }
+
         for (size_t i = 0; i<filenames.size(); ++i)
-            features[i] = loadFeatures({ filenames[i] }, desc_name);
+            features.push_back(loadFeatures({ filenames[i] }, desc_name));
+        
+            
 
         fbow::fBow vv, vv2;
         int avgScore = 0;
@@ -82,7 +110,7 @@ int main(int argc, char **argv) {
             {
 
                 vv2 = voc.transform(features[j][0]);
-                double score1 = vv.score(vv, vv2);
+                double score1 = vv.score(vv, vv2);    /** using L2_Norm , can't modify, need Implement Another if  woulf to test **/
                 counter++;
                 //		if(score1 > 0.01f)
                 {
@@ -114,7 +142,7 @@ int main(int argc, char **argv) {
             command += str.str();
             command += "/source.JPG";
             
-        system((string("cd ") + outDir).c_str());
+        // system((string("cd ") + outDir).c_str());
             system(command.c_str());
             j = 0;
             for (auto it = scores[i].begin(); it != scores[i].end(); it++)
