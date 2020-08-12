@@ -122,7 +122,7 @@ int main(int argc,char **argv)
     try{
         CmdLineParser cml(argc,argv);
         if (cml["-h"] || argc==1){
-            cerr<<"Usage:  descriptor_name output txtlist \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)"<<endl;
+            cerr<<"Usage:  descriptor_name output_Binary_File txtlist \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)"<<endl;
             return -1;
         }
 

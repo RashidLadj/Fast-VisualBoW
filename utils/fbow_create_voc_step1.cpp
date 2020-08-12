@@ -49,7 +49,7 @@ int main(int argc,char **argv)
     try{
         CmdLineParser cml(argc,argv);
         if (cml["-h"] || argc<3){
-            cerr<<"Usage:  features output.fbow [-k k] [-l L] [-t nthreads] [-maxIters <int>:0 default] [-v verbose on]. "<<endl;
+            cerr<<"Usage:  features_Binary_File output.fbow [-k k] [-l L] [-t nthreads] [-maxIters <int>:0 default] [-v verbose on]. "<<endl;
             cerr<<"Creates the vocabylary of k^L"<<endl;
             cerr<<"By default, we employ a random selection center without runnning a single iteration of the k means.\n"
                   "As indicated by the authors of the flann library in their paper, the result is not very different from using k-means, but speed is much better\n";

@@ -107,7 +107,7 @@ int main(int argc, char **argv){
     try{
         CmdLineParser cml(argc, argv);
         if (cml["-h"] || argc<4){
-            cerr << "Usage:  descriptor_name output dir_with_images \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)" << endl;
+            cerr << "Usage:  descriptor_name output_Binary_File dir_with_images \n\t descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)" << endl;
             return -1;
         }
 
