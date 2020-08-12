@@ -44,7 +44,7 @@ endif()
 OPTION(USE_OWN_EIGEN3	"Set to OFF to use a standard eigen3 version" ON)
 OPTION(BUILD_UTILS	"Set to OFF to not build utils" ON)
 OPTION(BUILD_SHARED_LIBS 	"Set to OFF to build static libraries" ON)
-OPTION(USE_CONTRIB "Set on/off" OFF)
+OPTION(USE_CONTRIB "Set on/off" ON)
 
 OPTION(USE_AVX "Set on/off" ON)
 OPTION(USE_SSE3 "Set on/off" ON)
