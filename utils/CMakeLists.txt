@@ -9,5 +9,7 @@ ADD_EXECUTABLE(fbow_create_voc_step1 fbow_create_voc_step1.cpp)
 #ADD_EXECUTABLE(fbow_create_voc_step1_opencv fbow_create_voc_step1_opencv.cpp)
 ADD_EXECUTABLE(fbow_transform fbow_transform.cpp)
 ADD_EXECUTABLE(image_matching image_matching.cpp)
+ADD_EXECUTABLE(image_matching_Query image_matching_Query.cpp) # Return Best Match
+
 INSTALL(TARGETS  fbow_create_voc_step0    fbow_create_voc_step1 fbow_transform RUNTIME DESTINATION bin)
 file(COPY images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
