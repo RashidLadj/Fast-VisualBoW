@@ -190,8 +190,6 @@ void Vocabulary::fromStream(std::istream &str)
 }
 
 double fBow::score (const  fBow &v1,const fBow &v2){
-
-
     fBow::const_iterator v1_it, v2_it;
     const fBow::const_iterator v1_end = v1.end();
     const fBow::const_iterator v2_end = v2.end();
@@ -239,7 +237,7 @@ double fBow::score (const  fBow &v1,const fBow &v2){
         score = 1.0;
     else
         score = 1.0 - sqrt(1.0 - score); // [0..1]
-
+        
     return score;
 }
 uint64_t fBow::hash()const{
