@@ -60,8 +60,7 @@ vector< cv::Mat > loadFeatures(std::vector<string> path_to_images, string descri
 int main(int argc, char **argv) {
     CmdLineParser cml(argc, argv);
     try {
-        if (argc<4 || cml["-h"]) throw std::runtime_error("Usage: FBoW_File Output_File(Ne sert à rien pour le moment) Image1 Image2 ... [descriptor]\n
-                                                           Usage: FBoW_File Output_File(Ne sert à rien pour le moment) Images_Directory [descriptor]\n          ");
+        if (argc<4 || cml["-h"]) throw std::runtime_error("Usage: FBoW_File Output_File(Ne sert à rien pour le moment) Image1 Image2 ... [descriptor]\nUsage: FBoW_File Output_File(Ne sert à rien pour le moment) Images_Directory [descriptor]\n");
         /** cd ..; cmake ..; make;  cd utils; ./image_matching ../../vocabularies/orb_mur.fbow output_image_matching 
          * images/poly01.jpg images/poly02.jpg images/poly03.jpg images/poly04.jpg images/poly05.jpg images/poly06.jpg 
          * images/poly07.jpg images/poly08.jpg images/poly09.jpg images/poly10.jpg images/poly11.jpg images/poly12.jpg 
@@ -92,12 +91,15 @@ int main(int argc, char **argv) {
             for (int i = 3; i < argc; ++i)
                 filenames.push_back({ argv[i] });
         }
+        
+        sort(filenames.begin(), filenames.end());
+        for (size_t i = 0; i<filenames.size(); ++i)
+            cout << "->" << filenames[i] << endl;
 
         for (size_t i = 0; i<filenames.size(); ++i)
             features.push_back(loadFeatures({ filenames[i] }, desc_name));
         
             
-
         fbow::fBow vv, vv2;
         int avgScore = 0;
         int counter = 0;
@@ -124,50 +126,21 @@ int main(int argc, char **argv) {
         auto t_end = std::chrono::high_resolution_clock::now();
         avgScore += double(std::chrono::duration_cast<std::chrono::milliseconds>(t_end - t_start).count());
 
-        std::string command;
+        std::string scoreValue;
         int j = 0;
-        for (size_t i = 0; i < scores.size(); i++)
-        {
-            std::stringstream str;
+        for (size_t i = 0; i < scores.size(); i++){
+            cout << "\nQuery Image is -> " << filenames[i] << endl;
 
-            command = "mkdir ";
-            str << i;
-            command += str.str();
-            command += "/";
-            system(command.c_str());
-
-            command = "cp ";
-            command += filenames[i];
-            command += " ";
-            command += str.str();
-            command += "/source.JPG";
-            
-        // system((string("cd ") + outDir).c_str());
-            system(command.c_str());
             j = 0;
-            for (auto it = scores[i].begin(); it != scores[i].end(); it++)
-            {
-                ++j;
-                std::stringstream str2;
-                command = "cp ";
-                command += filenames[it->second];
-                command += " ";
-                command += str.str();
-                command += "/";
-                str2 << j << "-";
-                str2 << it->first;
-                command += str2.str();
-                command += ".JPG";
-                system(command.c_str());
+            for (auto it = scores[i].begin(); it != scores[i].end(); it++){
+                std::stringstream str;
+                str << std::setfill('0') << std::setw(2) << ++j;
+
+                cout << "   " << str.str() << "- The image : " << filenames[it->second] << "  give a score of  " << it->first << endl;
             }
 
         }
-        /*
-        {
-        cout<<vv.begin()->first<<" "<<vv.begin()->second<<endl;
-        cout<<vv.rbegin()->first<<" "<<vv.rbegin()->second<<endl;
-        }
-        */
+
         std::cout << "avg score: " << avgScore << " # of features: " << features.size() << std::endl;
     }
     catch (std::exception &ex) {
