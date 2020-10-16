@@ -20,8 +20,8 @@ struct FBOW_API _float{
     inline operator float() const{return var;}
 };
 
-/**Bag of words
- */
+/**Bag of words **/
+/** Map --> first second **/
 struct FBOW_API fBow:std::map<uint32_t,_float>{
 
     void toStream(std::ostream &str) const  ;
@@ -149,6 +149,7 @@ private:
             id_or_childblock=id;
             id_or_childblock|=0x80000000;//set the msb to one to distinguish from non leaf
             //now,set the weight too
+            
             weight=Weight;
         }
         //sets as non leaf and sets the id of the block where the chilren are
@@ -392,6 +393,7 @@ private:
                  //if the node is leaf get word id and weight,else go to its children
                  if ( bn_info->isleaf()){//if the node is leaf get word id and weight
                       result[bn_info->getId()]+=bn_info->weight;
+                      std::cout << "rashid --> " << result[bn_info->getId()]  << std::endl;
                   }
                  else setBlock(bn_info->getId(),c_block);//go to its children
              }while( !bn_info->isleaf() && bn_info->getId()!=0);

@@ -130,7 +130,7 @@ fBow Vocabulary::transform(const cv::Mat &features)
     }
     else throw std::runtime_error("Vocabulary::transform invalid feature type. Should be CV_8UC1 or CV_32FC1");
 
-    ///now, normalize
+    ///now, normalize histogram --> Values between [O,1]
     //L2
     double norm=0;
     for(auto  e:result) norm += e.second * e.second;
@@ -206,6 +206,7 @@ double fBow::score (const  fBow &v1,const fBow &v2){
 
         if(v1_it->first == v2_it->first)
         {
+           
             score += vi * wi;
 
             // move v1 and v2 forward
